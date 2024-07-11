@@ -5,6 +5,7 @@ from src.controllers.trip_creator import Tripcreator
 from src.controllers.trip_finder import Tripfinder
 from src.controllers.trip_confirmer import Tripconfirmer
 from src.controllers.link_creator import Linkcreator
+from src.controllers.link_finder import LinkFinder
 
 from src.models.repositories.trips_repository import TripsRepository
 from src.models.repositories.emails_to_invite_repository import EmailsToInviteRepository
@@ -47,7 +48,7 @@ def confirm_trip(tripId):
     response = controller.confirm(tripId)
     return jsonify(response["body"]), response["status_code"]
 
-@trips_routes_bp.route("/trips/<tripId>/confirm", methods=["POST"]) 
+@trips_routes_bp.route("/trips/<tripId>/links", methods=["POST"]) 
 
 def link_creator(tripId):
     conn = db_connection_handler.get_connection()
@@ -55,4 +56,14 @@ def link_creator(tripId):
     controller = Linkcreator(links_repository)
 
     response = controller.create_link(request.json, tripId)
+    return jsonify(response["body"]), response["status_code"]
+
+@trips_routes_bp.route("/trips/<tripId>/links", methods=["GET"]) 
+
+def link_finder(tripId):
+    conn = db_connection_handler.get_connection()
+    links_repository = LinksRepository(conn)
+    controller = LinkFinder(links_repository)
+
+    response = controller.find(tripId)
     return jsonify(response["body"]), response["status_code"]
